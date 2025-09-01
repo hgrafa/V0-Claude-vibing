@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Trash2, Plus, CheckCircle2, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 interface Task {
   id: string
@@ -70,10 +71,30 @@ export default function TodoApp() {
 
     setTasks((prev) => [...prev, newTask])
     setInputValue("")
+
+    toast.success("Task added successfully! ✨", {
+      description: capitalizedText,
+      duration: 3000,
+    })
   }
 
   const removeTask = (taskId: string) => {
+    const taskToDelete = tasks.find((task) => task.id === taskId)
+    if (!taskToDelete) return
+
     setTasks((prev) => prev.filter((task) => task.id !== taskId))
+
+    toast.error("Task deleted", {
+      description: taskToDelete.text,
+      duration: 5000,
+      action: {
+        label: "Undo",
+        onClick: () => {
+          setTasks((prev) => [...prev, taskToDelete])
+          toast.success("Task restored! 🎉")
+        },
+      },
+    })
   }
 
   const toggleTask = (taskId: string) => {
